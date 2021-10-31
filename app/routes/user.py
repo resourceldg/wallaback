@@ -1,9 +1,9 @@
 
-from auth.auth import AuthHandler
+from ..auth.auth import AuthHandler
 from typing import List
 from fastapi import APIRouter, HTTPException, Response, Depends
 from sqlalchemy.sql.expression import select
-from config.db import conn
+from ..config.db import conn
 from models.user import users
 from schema.user import User
 from cryptography.fernet import Fernet

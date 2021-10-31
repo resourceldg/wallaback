@@ -1,5 +1,5 @@
 from fastapi import FastAPI
-from routes.user import user
+from .routes.user import user
 
 app =  FastAPI(
     title="Walatic Backend",

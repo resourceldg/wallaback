@@ -1,7 +1,7 @@
 from sqlalchemy import Table, Column
 from sqlalchemy.sql.schema import PrimaryKeyConstraint
 from sqlalchemy.sql.sqltypes import Integer, Float, String
-from config.db import meta, engine
+from ..config.db import meta, engine
 
 users = Table('user', meta, Column(
     'id', Integer, primary_key=True),

@@ -7,7 +7,6 @@ from passlib.context import CryptContext
 from datetime import datetime, timedelta
 from dotenv import load_dotenv
 
-
 load_dotenv()
 #os.getenv['SECRET']  
 
