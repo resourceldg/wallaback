@@ -1,13 +1,13 @@
 version: '3.7'
 
 services:
-  Api:
-    container_name: Api
+  api:
+    container_name: api
     user: root
     build: .
     command: uvicorn app.main:app --host 0.0.0.0 --port 80
     volumes:
-      - .:/usr/src/personalised_nudges
+      - data:/usr/src/data
     ports:
       - 80:80
     depends_on:
@@ -30,3 +30,6 @@ services:
 
 networks:
   proxy-net:
+volumes:
+  data:
+  postgres_data:
