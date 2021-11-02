@@ -4,7 +4,7 @@ from sqlalchemy.ext.declarative import declarative_base
 
 from sqlalchemy.orm import sessionmaker
 
-SQLALCHEMY_DATABASE_URL = "postgresql+psycopg2://lucas:zen777@localhost:5432/wallaback"
+SQLALCHEMY_DATABASE_URL = "postgresql+psycopg2://lucas:zen777@66.97.42.81:5432/wallaback"
 
 engine = create_engine(SQLALCHEMY_DATABASE_URL)
 conn = engine.connect()
