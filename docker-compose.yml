@@ -26,8 +26,8 @@ services:
       - POSTGRES_PASSWORD=zen777
       - POSTGRES_DB=wallaback
       - POSTGRES_HOST=localhost
-    ports:
-      - 5432:5432
+    expose:
+      - 5432
     networks:
       proxy-net:
 
