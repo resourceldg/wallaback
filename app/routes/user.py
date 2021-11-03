@@ -4,8 +4,8 @@ from typing import List
 from fastapi import APIRouter, HTTPException, Response, Depends
 from sqlalchemy.sql.expression import select
 from ..config.db import conn
-from models.user import users
-from schema.user import User
+from ..models.user import users
+from ..schema.user import User
 from cryptography.fernet import Fernet
 
 # get instance by imports
