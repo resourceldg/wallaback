@@ -61,7 +61,7 @@ services:
       - LETSENCRYPT_HOST=wardixlab.com
       - LETSENCRYPT_EMAIL=resourceld@gmail.com
     volumes:
-      - ~/node-red-data:/data
+      - /node-red-data:/data
     networks:
       - proxy-net
       - net

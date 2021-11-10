@@ -1,7 +1,6 @@
 version: '3'
 services:
   nginx:
-    container_name: nginx
     image: jwilder/nginx-proxy
     ports:
       - "80:80"
@@ -46,69 +45,28 @@ services:
       - db
     networks:
       proxy-net:
- 
-  node-red:
-    container_name: node-red
-    build:
-      context: .
-      dockerfile: ./Dockerfile.node
-    user: root
-    expose:
-      - 1880
-    environment:
-      - VIRTUAL_HOST=wardixlab.com
-      - VIRTUAL_PORT=1880
-      - LETSENCRYPT_HOST=wardixlab.com
-      - LETSENCRYPT_EMAIL=resourceld@gmail.com
-    volumes:
-      - ~/node-red-data:/data
-    networks:
-      - proxy-net
-      - net
-
-  mosquitto:
-    container_name: mosquitto
-    image: eclipse-mosquitto:2.0.12
-    volumes:
-      - ./mosquitto/config:/mosquitto/config/
-    ports:
-      - '8883:8883'
-      - '8083:8083'
-    networks:
-      - proxy-net
-      - net
-    restart: unless-stopped
-
-
   db:
     container_name: db
     image: postgres:12.0-alpine
-    user: postgres
     volumes:
           - postgres_data:/var/lib/postgresql/data/
     environment:
-      - POSTGRES_HOST_AUTH_METHOD=trust
-      - POSTGRES_USER=username
-      - POSTGRES_PASSWORD=password
-      - POSTGRES_DB=database
-    expose:
-      - 5432
+      - POSTGRES_USER=lucas
+      - POSTGRES_PASSWORD=admin
+       - POSTGRES_HOST=66.97.42.81
+    ports:
+      - 5432:5432
     networks:
       proxy-net:
-    depends_on:
-      - nginx
 
 networks:
   proxy-net:
-  net:
 volumes:
   postgres_data:
   certs:
   vhostd:
   config:
   html:
-  node-red-data:
-  mosquitto:
 
 
 
@@ -124,3 +82,45 @@ volumes:
 
 
 
+
+
+
+
+
+version: '3.7'
+
+services:
+  api:
+    container_name: api
+    user: root
+    restart: always
+    build:
+      context: .
+      dockerfile: ./Dockerfile
+    volumes:
+      - .:/app
+    ports:
+      - 8000:8000
+    depends_on:
+      - db
+    networks:
+      proxy-net:
+  db:
+    container_name: db
+    image: postgres:12.0-alpine
+    volumes:
+          - postgres_data:/var/lib/postgresql/data/
+    environment:
+      - POSTGRES_USER=lucas
+      - POSTGRES_PASSWORD=zen777
+      - POSTGRES_DB=wallaback
+      - POSTGRES_HOST=66.97.42.81
+    expose:
+      - 5432
+    networks:
+      proxy-net:
+
+networks:
+  proxy-net:
+volumes:
+  postgres_data:
