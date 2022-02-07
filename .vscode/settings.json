@@ -1,0 +1,10 @@
+{
+    "workbench.colorCustomizations": {
+        "activityBar.background": "#203037",
+        "titleBar.activeBackground": "#2D434C",
+        "titleBar.activeForeground": "#F9FBFC"
+    },
+    "workbench.editor.decorations.colors": false,
+    "editor.bracketPairColorization.enabled": true,
+    "workbench.colorTheme": "Visual Studio Dark"
+}

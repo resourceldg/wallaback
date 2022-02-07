@@ -1,7 +1,7 @@
 import os
 import jwt
 
-from fastapi import HTTPException, Security
+from fastapi import HTTPException, Security, Depends
 from fastapi.security import HTTPAuthorizationCredentials, HTTPBearer
 from passlib.context import CryptContext
 from datetime import datetime, timedelta
@@ -36,7 +36,7 @@ class AuthHandler():
         payload = {
             'exp': datetime.utcnow() + timedelta(days=0, minutes=5),
             'iat': datetime.utcnow(),
-            'sub': user_id      
+            'sub': user_id
         }
         # Creamos el token con nuestro secreto
         return jwt.encode(
@@ -54,6 +54,7 @@ class AuthHandler():
             raise HTTPException(status_code=401, detail='Signature has expired')
         except jwt.InvalidTokenError as e:
             raise HTTPException(status_code=401, detail='Invalid token')
+   
 
     # SECURITY SQLI Para protegernos de una una inyección SQL esto ASEGURA de que se haya sumistrado el token
     #  de portador del encabezado de autenticación http, pero no hace nada para validarlo, SOLO REVISA SU PRESENCIA AQUÍ,
