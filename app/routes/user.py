@@ -1,4 +1,5 @@
 
+from json.encoder import JSONEncoder
 from ..auth.auth import AuthHandler
 from typing import List
 from fastapi import APIRouter, HTTPException, Response, Depends
@@ -17,18 +18,24 @@ f = Fernet(key)
 
 
 @user.post("/login", tags=["users"])
-async def login (email:str,password:str):
+async def login (user:User):
     #login user
-    r = conn.execute(users.select().where(users.c.email == email)).first()#check if email exist
+    r = conn.execute(users.select().where(users.c.email == user.email)).first()#check if email exist
     
     """ print(r.password)
     print(password) """
   
     if (r):
-        if  auth_handler.verify_password(password, r.password):
+        if  auth_handler.verify_password(user.password, r.password):
             token = auth_handler.encode_token(r.name)
+            id= r.id
+            name=r.name
+            email= r.email
+            password=r.password
+
+
             print('Login successfully!')
-            return { 'token': token } 
+            return { 'token': token, 'id':id, 'name':name, 'email':email, 'password':password }
         else:
             raise HTTPException(status_code=401, detail='LOGIN ERROR: Invalid email and/or password')
     else: 
@@ -45,13 +52,14 @@ def protected(name=Depends(auth_handler.auth_wrapper)):
     return { 'name': name}
 
 @user.get("/users", tags=["users"])
-async def get_users():
+async def get_users(con=Depends(auth_handler.auth_wrapper)):
     #get all users
-    return conn.execute(users.select()).fetchall()
+    con=conn.execute(users.select()).fetchall()
+    return con
 
-@user.post("/users", tags=["users"])
+@user.post("/signup", tags=["users"])
 async def create_users(user:User):
-    #create user by eschema
+    #create user by eschemas
     valid = conn.execute(users.select().where(users.c.email == user.email)).first()#check if email exist
     if (not valid):
         new_user= {'name': user.name, 'email': user.email}
@@ -65,7 +73,7 @@ async def create_users(user:User):
         raise HTTPException(status_code=403, detail="CREATION ERROR: Email already exist")
 
 @user.get("/users/{id}", tags=["users"])
-async def get_user(id:str):
+async def get_user(id:str=Depends(auth_handler.auth_wrapper)):
     #search user by id
     valid = conn.execute(users.select().where(users.c.id == id)).first()#check if id exist
     if (valid):
@@ -76,7 +84,7 @@ async def get_user(id:str):
         raise HTTPException(status_code=404, detail="SEARCH ERROR: User id not found")
 
 @user.delete("/users/{id}", tags=["users"])
-async def delete_user(id:str):
+async def delete_user(id:str=Depends(auth_handler.auth_wrapper)):
     #delete user by id
     valid = conn.execute(users.select().where(users.c.id == id)).first()#check if id exist
     if (valid):
@@ -87,7 +95,7 @@ async def delete_user(id:str):
         raise HTTPException(status_code=404, detail="DELETE ERROR: User id not exist")
         
 @user.put("/users/{id}", tags=["users"])
-async def update_user(id:str, user:User):
+async def update_user(id:str, user:User=Depends(auth_handler.auth_wrapper)):
     #update user by id
     valid = conn.execute(users.select().where(users.c.id == id)).first()#check if id exist
     if (valid):
@@ -97,8 +105,6 @@ async def update_user(id:str, user:User):
         return 'User update successfully!'
     else: 
         raise HTTPException(status_code=404, detail="UPDATE ERROR: User id not exist")
-
-
 
 
 
