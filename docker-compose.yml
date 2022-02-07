@@ -1,31 +1,36 @@
-version: '3'
+version: '2'
 services:
   nginx:
     container_name: nginx
-    image: jwilder/nginx-proxy
+    restart: always
+    image: jwilder/nginx-proxy:alpine
+    container_name: nginx-proxy
     ports:
       - "80:80"
       - "443:443"
     volumes:
-      - /var/run/docker.sock:/tmp/docker.sock:ro
-      - ./config/certs:/etc/nginx/certs:ro
-      - html:/usr/share/nginx/html
-      - vhostd:/etc/nginx/vhost.d
+      - "/etc/nginx/vhost.d"
+      - "/usr/share/nginx/html"
+      - "./certs:/etc/nginx/certs:ro"
+      - "/var/run/docker.sock:/tmp/docker.sock:ro"
     networks:
       proxy-net:
-    labels:
-      - com.github.jrcs.letsencrypt_nginx_proxy_companion.nginx_proxy
 
-  letsencrypt:
-    image: jrcs/letsencrypt-nginx-proxy-companion
+  nginx-letsencrypt:
+    container_name: ssl
     restart: always
-    environment:
-      - NGINX_PROXY_CONTAINER=nginx-proxy
+    image: jrcs/letsencrypt-nginx-proxy-companion
+    container_name: nginx-letsencrypt
+    depends_on:
+      - nginx
+    volumes_from:
+      - nginx
     volumes:
-      - ./config/certs:/etc/nginx/certs:rw
-      - vhostd:/etc/nginx/vhost.d
-      - html:/usr/share/nginx/html
-      - /var/run/docker.sock:/var/run/docker.sock:ro
+      - "/var/run/docker.sock:/var/run/docker.sock:ro"
+      - "./certs:/etc/nginx/certs:rw"
+    networks:
+      proxy-net:
+
   api:
     container_name: api
     user: root
@@ -38,47 +43,14 @@ services:
     expose:
       - 80
     environment:
-      - VIRTUAL_HOST=wardixlab.com
+      - VIRTUAL_HOST=wardixlab.com, www.wardixlab.com
       - VIRTUAL_PORT=80
-      - LETSENCRYPT_HOST=wardixlab.com
+      - LETSENCRYPT_HOST=wardixlab.com, www.wardixlab.com
       - LETSENCRYPT_EMAIL=resourceld@gmail.com
     depends_on:
       - db
     networks:
       proxy-net:
- 
-  node-red:
-    container_name: node-red
-    build:
-      context: .
-      dockerfile: ./Dockerfile.node
-    user: root
-    expose:
-      - 1880
-    environment:
-      - VIRTUAL_HOST=wardixlab.com
-      - VIRTUAL_PORT=1880
-      - LETSENCRYPT_HOST=wardixlab.com
-      - LETSENCRYPT_EMAIL=resourceld@gmail.com
-    volumes:
-      - ~/node-red-data:/data
-    networks:
-      - proxy-net
-      - net
-
-  mosquitto:
-    container_name: mosquitto
-    image: eclipse-mosquitto:2.0.12
-    volumes:
-      - ./mosquitto/config:/mosquitto/config/
-    ports:
-      - '8883:8883'
-      - '8083:8083'
-    networks:
-      - proxy-net
-      - net
-    restart: unless-stopped
-
 
   db:
     container_name: db
@@ -100,15 +72,13 @@ services:
 
 networks:
   proxy-net:
-  net:
 volumes:
   postgres_data:
   certs:
   vhostd:
   config:
   html:
-  node-red-data:
-  mosquitto:
+
 
 
 

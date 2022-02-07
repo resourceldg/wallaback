@@ -46,39 +46,6 @@ services:
       - db
     networks:
       proxy-net:
- 
-  node-red:
-    container_name: node-red
-    build:
-      context: .
-      dockerfile: ./Dockerfile.node
-    user: root
-    expose:
-      - 1880
-    environment:
-      - VIRTUAL_HOST=wardixlab.com
-      - VIRTUAL_PORT=1880
-      - LETSENCRYPT_HOST=wardixlab.com
-      - LETSENCRYPT_EMAIL=resourceld@gmail.com
-    volumes:
-      - /node-red-data:/data
-    networks:
-      - proxy-net
-      - net
-
-  mosquitto:
-    container_name: mosquitto
-    image: eclipse-mosquitto:2.0.12
-    volumes:
-      - ./mosquitto/config:/mosquitto/config/
-    ports:
-      - '8883:8883'
-      - '8083:8083'
-    networks:
-      - proxy-net
-      - net
-    restart: unless-stopped
-
 
   db:
     container_name: db
@@ -100,15 +67,13 @@ services:
 
 networks:
   proxy-net:
-  net:
 volumes:
   postgres_data:
   certs:
   vhostd:
   config:
   html:
-  node-red-data:
-  mosquitto:
+:
 
 
 
