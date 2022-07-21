@@ -1,25 +1,20 @@
 version: '3'
 services:
   nginx-proxy:
-    image: nginx:alpine
+    image: jwilder/nginx-proxy:alpine
     container_name: nginx
     restart: always
     ports:
-      - "${PORT:-443:443}"
+      - "443:443"
       - "80:80" 
-    environment:
-      - DEFAULT_HOST= wardixlab.com
-      - CERT_NAME= default.crt
     volumes:
+      - /var/run/docker.sock:/tmp/docker.sock:ro
       - ./certs:/etc/nginx/certs:ro
-      - ./conf.d:/etc/nginx/conf.d
+      - vhostd:/etc/nginx/vhost.
     networks:
       proxy-net:
-    privileged: true
-    depends_on:
-      - app
-  app:
-    container_name: app
+  api:
+    container_name: api
     user: root
     restart: always
     build:
@@ -31,10 +26,10 @@ services:
     volumes:
       - .:/app
     expose:
-      - 8000
+      - 3000
     depends_on:
       - db
-    networks:
+           networks:
       proxy-net:
 
   db:
@@ -52,14 +47,15 @@ services:
       - 5432:5432
     networks:
       proxy-net:
-
+    depends_on:
+      - nginx-proxy
 networks:
   proxy-net:
-    driver: bridge
 volumes:
   postgres_data:
   certs:
-  conf.d:
+  config:
+  vhostd:
 
 
 

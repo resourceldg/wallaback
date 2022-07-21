@@ -8,4 +8,4 @@ RUN pip install psycopg2-binary
 
 COPY ./app /app/app
 
-CMD ["uvicorn", "app.main:app", "--proxy-headers", "--host", "0.0.0.0", "--port", "80"]
+CMD ["uvicorn", "app.main:app", "--proxy-headers", "--host", "0.0.0.0"]
